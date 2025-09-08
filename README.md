@@ -1,3 +1,5 @@
+![Mikcom](https://github.com/user-attachments/assets/6fa16d26-b0f3-4d61-9771-f2cb9efab815)
+
 # Downdetector - Service Monitoring System 
 Project for monitoring service failures Mikcom
 <p>A system for monitoring service statuses through Downdetector with Telegram bot notifications.</p>
