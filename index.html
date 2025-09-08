@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус сервисов</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 15px 0;
+            background-color: white;
+            border-top: 1px solid #e0e0e0;
+            z-index: 100;
+        }
+        .container {
+            padding-bottom: 70px;
+        }
+        .footer .subtitle {
+            margin: 0;
+            font-size: 0.9em;
+        }
+        .bold-percent {
+            font-weight: 600;
+        }
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 id="greeting">Привет пользователь!</h1>
+        <p class="subtitle">Актуальная информация о доступности</p>
+        
+        <div id="animation-container" class="animation-container">
+            <lottie-player id="current-animation" src="loading.json" background="transparent" speed="1" loop autoplay></lottie-player>
+        </div>
+        
+        <div id="no-issues-message" class="hidden">
+            <h1 class="no-issues-title">Сбоев не найдено</h1>
+        </div>
+        
+        <div id="services-list" class="services-grid hidden">
+            <!-- Сюда загружаются данные из БД -->
+        </div>
+
+        <div class="last-update">
+            <p>Последнее обновление: <span id="update-time">Загружаем...</span></p>
+        </div>
+        
+        <button id="refresh-btn" class="refresh-button hidden">Обновить данные</button>
+    </div>
+    
+    <div class="footer">
+        <p class="subtitle">Разработал <a href="https://t.me/m1kcom" style="color: #3390ec; text-decoration: none;">@m1kcom</a> | <a href="https://ваш-домен.ру/about.html" style="color: #3390ec; text-decoration: none;">О сервисе</a> | version 1.8.1065</p>
+    </div>
+    
+    <div id="modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modal-title">Discord</h3>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    <p class="modal-status down">⚠️ Жалобы на сбой</p>
+                    <p class="modal-time"><span class="black-text">10.06.2025, 13:40:07</span></p>
+                </div>
+                <div class="modal-stats">
+                    <p class="modal-stat">Жалоб – много (час: 460, сутки: 8268)</p>
+                    
+                    <h2 class="stat-title">Сбои в регионах:</h2>
+                    <ul class="stat-list" id="regions-list">
+                        <li>Челябинская область - 10%</li>
+                        <li>Свердловская область - 8%</li>
+                        <li>Новосибирская область - 5%</li>
+                    </ul>
+                    
+                    <h2 class="stat-title">Наиболее частые неполадки:</h2>
+                    <ul class="stat-list" id="problems-list">
+                        <li>Сбой сайта - 45%</li>
+                        <li>Сбой мобильного приложения - 20%</li>
+                        <li>Общий сбой - 15%</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="close-button">Закрыть </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        if (tg.initDataUnsafe?.user?.first_name) {
+            document.getElementById('greeting').textContent = `Привет ${tg.initDataUnsafe.user.first_name}!`;
+        }
+    
+        let isModalClosing = false;
+    
+        async function loadServices() {
+            const animation = document.getElementById('current-animation');
+            const servicesList = document.getElementById('services-list');
+            const noIssuesMessage = document.getElementById('no-issues-message');
+            const refreshBtn = document.getElementById('refresh-btn');
+            
+            try {
+                animation.load('loading.json');
+                servicesList.classList.add('hidden');
+                noIssuesMessage.classList.add('hidden');
+                refreshBtn.classList.add('hidden');
+                
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                const response = await fetch('api.php');
+                const data = await response.json();
+    
+                document.getElementById('update-time').textContent = new Date().toLocaleString();
+                
+                if (data.success && data.services.length > 0) {
+                    servicesList.innerHTML = '';
+                    data.services.forEach(service => {
+                        servicesList.innerHTML += `
+                            <div class="service-card" data-reg1="${service.reg_1}" data-per1="${service.per_1}"
+                                 data-reg2="${service.reg_2}" data-per2="${service.per_2}"
+                                 data-reg3="${service.reg_3}" data-per3="${service.per_3}"
+                                 data-service1="${service.service_1}" data-percent1="${service.percent_1}"
+                                 data-service2="${service.service_2}" data-percent2="${service.percent_2}"
+                                 data-service3="${service.service_3}" data-percent3="${service.percent_3}">
+                                <div class="service-card-content">
+                                    <img src="${service.icon_url}" alt="${service.service_name}" class="service-icon">
+                                    <div class="service-info">
+                                        <h3>${service.service_name}</h3> 
+                                        <p class="status down">⚠️ Жалобы на сбой</p>
+                                        <p class="time">Обнаружено: ${new Date(service.timestamp).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    animation.load('error.json');
+                    servicesList.classList.remove('hidden');
+                    noIssuesMessage.classList.add('hidden');
+                } else {
+                    animation.load('ok.json');
+                    noIssuesMessage.classList.remove('hidden');
+                    servicesList.classList.add('hidden');
+                }
+                
+                refreshBtn.classList.remove('hidden');
+                setupModal();
+            } catch (error) {
+                console.error('Ошибка:', error);
+                animation.load('error.json');
+                refreshBtn.classList.remove('hidden');
+            }
+        }
+    
+        function setupModal() {
+            const modal = document.getElementById('modal');
+            const closeBtns = document.querySelectorAll('.close-button');
+            const serviceCards = document.querySelectorAll('.service-card');
+            const modalContainer = document.querySelector('.modal-container');
+            
+            modalContainer.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    if (isModalClosing) return;
+                    
+                    const title = this.querySelector('h3').textContent;
+                    const status = this.querySelector('.status').textContent;
+                    const time = this.querySelector('.time').textContent;
+                    
+                    document.getElementById('modal-title').textContent = title;
+                    document.querySelector('.modal-status').textContent = status;
+                    document.querySelector('.modal-time span').textContent = time;
+                    
+                    // Обновляем данные регионов
+                    const regionsList = document.getElementById('regions-list');
+                    regionsList.innerHTML = '';
+                    
+                    if (this.dataset.reg1 && this.dataset.per1) {
+                        regionsList.innerHTML += `
+                            <li>${this.dataset.reg1} - <span class="bold-percent">${this.dataset.per1}</span>%</li>
+                        `;
+                    }
+                    if (this.dataset.reg2 && this.dataset.per2) {
+                        regionsList.innerHTML += `
+                            <li>${this.dataset.reg2} - <span class="bold-percent">${this.dataset.per2}</span>%</li>
+                        `;
+                    }
+                    if (this.dataset.reg3 && this.dataset.per3) {
+                        regionsList.innerHTML += `
+                            <li>${this.dataset.reg3} - <span class="bold-percent">${this.dataset.per3}</span>%</li>
+                        `;
+                    }
+                    
+                    // Обновляем данные проблем
+                    const problemsList = document.getElementById('problems-list');
+                    problemsList.innerHTML = '';
+                    
+                    if (this.dataset.service1 && this.dataset.percent1) {
+                        problemsList.innerHTML += `
+                            <li>${this.dataset.service1} - <span class="bold-percent">${this.dataset.percent1}</span>%</li>
+                        `;
+                    }
+                    if (this.dataset.service2 && this.dataset.percent2) {
+                        problemsList.innerHTML += `
+                            <li>${this.dataset.service2} - <span class="bold-percent">${this.dataset.percent2}</span>%</li>
+                        `;
+                    }
+                    if (this.dataset.service3 && this.dataset.percent3) {
+                        problemsList.innerHTML += `
+                            <li>${this.dataset.service3} - <span class="bold-percent">${this.dataset.percent3}</span>%</li>
+                        `;
+                    }
+                    
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeModal();
+                });
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (isModalClosing) return;
+                if (e.target === modal || e.target.classList.contains('modal-backdrop')) {
+                    closeModal();
+                }
+            });
+            
+            function closeModal() {
+                if (isModalClosing) return;
+                
+                isModalClosing = true;
+                modal.classList.add('closing');
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                
+                setTimeout(() => {
+                    modal.classList.remove('closing');
+                    isModalClosing = false;
+                }, 400);
+            }
+        }
+    
+        document.getElementById('refresh-btn').addEventListener('click', () => {
+            document.getElementById('current-animation').load('loading.json');
+            document.getElementById('services-list').classList.add('hidden');
+            document.getElementById('no-issues-message').classList.add('hidden');
+            document.getElementById('refresh-btn').classList.add('hidden');
+            
+            fetch('update_db.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({down_services: []})
+            }).then(() => {
+                setTimeout(loadServices, 1500);
+            }).catch(error => {
+                console.error('Ошибка:', error);
+                document.getElementById('current-animation').load('error.json');
+                document.getElementById('refresh-btn').classList.remove('hidden');
+            });
+        });
+    
+        loadServices();
+    </script>
+</body>
+</html>

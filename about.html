@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О боте "Мониторинг сервисов Mikcom"</title>
+    <style>
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #707579;
+            --tg-theme-link-color: #3390ec;
+            --tg-theme-button-color: #3390ec;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #f4f4f5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--tg-theme-hint-color);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .section {
+            margin-bottom: 24px;
+            background-color: var(--tg-theme-secondary-bg-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .feature {
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        .feature-icon {
+            margin-right: 12px;
+            color: var(--tg-theme-button-color);
+            font-weight: bold;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .warning {
+            background-color: #fff4e5;
+            border-left: 4px solid #ff9500;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 24px;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ff9500;
+        }
+
+        a {
+            color: var(--tg-theme-link-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .section {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>О боте "Мониторинг сервисов Mikcom"</h1>
+            <p>Ваш помощник в отслеживании доступности популярных сервисов</p>
+        </div>
+
+        <div class="section">
+            <h2>Возможности бота</h2>
+            
+            <div class="feature">
+                <div class="feature-icon">•</div>
+                <div class="feature-text">Мониторинг более 100 популярных сервисов в различных категориях: финансы, телеком, общение, e-commerce и другие</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">•</div>
+                <div class="feature-text">Возможность добавить до 3 сервисов для персонального мониторинга</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">•</div>
+                <div class="feature-text">Мгновенные уведомления о проблемах с доступностью выбранных сервисов</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">•</div>
+                <div class="feature-text">Удобное управление списком отслеживаемых сервисов прямо в чате с ботом</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">•</div>
+                <div class="feature-text">Автоматическая проверка статуса сервисов каждые 5 минут</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Как использовать</h2>
+            
+            <div class="feature">
+                <div class="feature-icon">1</div>
+                <div class="feature-text">Начните чат с ботом, нажав кнопку START или введя команду /start</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">2</div>
+                <div class="feature-text">Добавьте интересующие вас сервисы через меню "➕ Добавить сервис"</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">3</div>
+                <div class="feature-text">Просматривайте ваши сервисы в разделе "📋 Мои сервисы"</div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">4</div>
+                <div class="feature-text">Получайте автоматические уведомления при возникновении проблем</div>
+            </div>
+        </div>
+
+        <div class="warning">
+            <div class="warning-title">Важная информация</div>
+            <p>Данные о доступности сервисов предоставляются на основе информации с сайта <a href="https://downdetector.su/" rel="nofollow">downdetector.su</a>. Мы не гарантируем 100% точность данных и не несем ответственности за возможные неточности в информации о доступности сервисов.</p>
+        </div>
+    </div>
+</body>
+</html>
